@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Build artifacts
+*.zip
+
+# TRAE share packages (internal)
+.trae-html-share-packages/
+
+# Development
+*.log
+*.swp
+*.swo
+
+# Temporary
+tmp/
+temp/
+
+# Private files
+.env
+.env.local

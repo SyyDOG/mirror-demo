@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Mirror · 从每天发生的事里，照见真实的你</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ======================= 今日 Tab ======================= -->
+    <section class="tab-panel active" id="tab-today">
+      <header class="top-bar">
+        <div class="top-left">
+          <div class="brand-mark">Mirror</div>
+          <div class="top-date" id="top-date"></div>
+        </div>
+        <button id="personality-btn" class="personality-btn" style="display:none;">人格</button>
+        <button class="settings-btn" id="settings-btn">⚙</button>
+        <button class="theme-toggle" data-theme-switch><span class="theme-icon" id="theme-icon">☾</span><span id="theme-label">夜晚</span></button>
+      </header>
+
+      <!-- 设置面板 -->
+      <div class="settings-panel" id="settings-panel" hidden>
+        <div class="settings-card">
+          <h4>⚙ 分析引擎设置</h4>
+          <div class="settings-row">
+            <label>分析引擎</label>
+            <select id="analysis-mode" class="settings-select">
+              <option value="local">本地规则引擎（离线可用）</option>
+              <option value="ai">AI 智能分析（推荐）</option>
+            </select>
+          </div>
+          <div id="ai-settings" hidden>
+            <div class="settings-row">
+              <label>AI 平台</label>
+              <select id="ai-platform" class="settings-select">
+                <option value="deepseek">DeepSeek（新用户送1000万token）</option>
+                <option value="siliconflow">硅基流动 SiliconFlow（送2000万token）</option>
+                <option value="zhipu">智谱 GLM（新用户送额度）</option>
+                <option value="qwen">通义千问 Qwen（新用户送额度）</option>
+              </select>
+            </div>
+            <div class="settings-row">
+              <label>模型</label>
+              <select id="ai-model" class="settings-select">
+              </select>
+            </div>
+            <div class="settings-row" id="apikey-row">
+              <label>API Key</label>
+              <input type="password" id="api-key-input" class="settings-input" placeholder="sk-xxxxxxxxxxxxxxxx" />
+              <p class="settings-hint">API Key 仅保存在本地浏览器中，不会上传至任何服务器。</p>
+              <p class="settings-hint" id="apikey-hint"></p>
+            </div>
+          </div>
+          <div class="settings-row">
+            <button id="save-settings-btn" class="primary-btn" style="width:100%;">保存设置</button>
+          </div>
+          <div class="settings-status" id="settings-status"></div>
+        </div>
+      </div>
+
+      <div class="today-container">
+        <div class="hero-quote">“今天发生了什么？”</div>
+        <p class="hero-sub">慢慢写。不用整理，不用完美。这里只有你和镜子。</p>
+
+        <div class="input-card">
+          <textarea id="free-input" rows="7" placeholder="比如：开会时同事打断了我的方案，我没说什么，但心里一直不舒服。回家后又觉得当时自己应该反驳……"></textarea>
+          <div class="input-footer">
+            <label class="toggle">
+              <input type="checkbox" id="dont-save" />
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">本次不保存</span>
+            </label>
+            <button id="analyze-btn" class="primary-btn">照一照 →</button>
+          </div>
+        </div>
+
+        <!-- 安全提醒 -->
+        <div class="safety-panel" id="safety-panel" hidden>
+          <div class="safety-icon">✦</div>
+          <h3 id="safety-title">请先慢下来</h3>
+          <div id="safety-body" class="safety-body"></div>
+          <div class="safety-resources">
+            <div><strong>可信任的人：</strong>父母 / 朋友 / 伴侣 / 老师——先打一个电话</div>
+            <div><strong>全国心理援助热线：</strong>400-161-9995（24小时）</div>
+            <div><strong>北京心理危机研究与干预中心：</strong>010-82951332</div>
+            <div><strong>紧急情况：</strong>拨打 110 / 120</div>
+          </div>
+        </div>
+
+        <!-- 承接情绪 -->
+        <div class="echo-panel" id="echo-panel" hidden>
+          <div class="echo-bar"></div>
+          <p class="echo-text" id="echo-text"></p>
+        </div>
+
+        <!-- AI 分析区 -->
+        <div class="analysis-area" id="analysis-area" hidden>
+
+          <div class="mirror-card" id="card-1">
+            <div class="card-head">
+              <span class="card-index">01</span>
+              <h3>情境与事实</h3>
+            </div>
+            <div class="card-body" id="body-what"></div>
+          </div>
+
+          <div class="mirror-card" id="card-2">
+            <div class="card-head">
+              <span class="card-index">02</span>
+              <h3>人格动力</h3>
+            </div>
+            <div class="card-body" id="body-touch"></div>
+          </div>
+
+          <div class="mirror-card" id="card-3">
+            <div class="card-head">
+              <span class="card-index">03</span>
+              <h3>行为模式</h3>
+            </div>
+            <div class="card-body" id="body-pattern"></div>
+          </div>
+
+          <div class="mirror-card" id="card-4">
+            <div class="card-head">
+              <span class="card-index">04</span>
+              <h3>核心需求与渴望</h3>
+            </div>
+            <div class="card-body" id="body-fear"></div>
+          </div>
+
+          <div class="mirror-card" id="card-5">
+            <div class="card-head">
+              <span class="card-index">05</span>
+              <h3>建议</h3>
+            </div>
+            <div class="card-body" id="body-action"></div>
+          </div>
+
+          <!-- 用户反馈 -->
+          <div class="feedback-row">
+            <span class="fb-prefix">这次分析对你来说：</span>
+            <button class="fb-btn" data-fb="accurate">准</button>
+            <button class="fb-btn" data-fb="somewhat">有一点准</button>
+            <button class="fb-btn" data-fb="off">不太准</button>
+            <span class="fb-result" id="fb-result"></span>
+          </div>
+
+          <div class="save-hint" id="save-hint"></div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= 我的镜像 Tab ======================= -->
+    <section class="tab-panel" id="tab-mirror">
+      <header class="top-bar">
+        <div class="top-left">
+          <div class="brand-mark">Mirror</div>
+          <div class="top-date">我的镜像</div>
+        </div>
+        <button id="personality-btn-mirror" class="personality-btn" style="display:none;">人格</button>
+        <button class="theme-toggle" data-theme-switch><span class="theme-icon">☾</span><span>夜晚</span></button>
+      </header>
+
+      <div class="panel-scroll">
+
+        <div class="section-title">✦ 我想成为的人</div>
+        <div class="card-d">
+          <p class="card-d-sub">当前主目标（AI 建议会围绕它）</p>
+          <div class="desire-current" id="desire-current">尚未设定</div>
+          <div class="section-sub-title">从模板里挑一个，或自由修改</div>
+          <div class="preset-grid" id="preset-grid"></div>
+          <div class="custom-desire-row">
+            <input id="custom-desire-input" type="text" placeholder="也可以自己写一个，比如：情绪稳定、有边界感，但依然温柔的人" />
+            <button id="save-custom-desire" class="ghost-btn">设为主目标</button>
+          </div>
+        </div>
+
+        <div class="section-title">✦ 画像摘要</div>
+        <div class="card-d">
+          <div class="stats-strip" id="stats-strip"></div>
+          <div class="section-sub-title">反复出现的倾向</div>
+          <div id="traits-list" class="traits-list"></div>
+          <div class="section-sub-title">高频主题</div>
+          <div id="theme-cloud" class="theme-cloud"></div>
+        </div>
+
+        <div class="section-title">✦ 过往记录</div>
+        <div class="card-d">
+          <div id="history-list" class="history-list"></div>
+          <button id="clear-all" class="danger-btn">清空全部记录</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================= 成长报告 Tab ======================= -->
+    <section class="tab-panel" id="tab-report">
+      <header class="top-bar">
+        <div class="top-left">
+          <div class="brand-mark">Mirror</div>
+          <div class="top-date">成长报告</div>
+        </div>
+        <button class="theme-toggle" data-theme-switch><span class="theme-icon">☾</span><span>夜晚</span></button>
+      </header>
+
+      <div class="panel-scroll">
+        <div class="section-title">✦ 每 7 天自动生成</div>
+        <div id="weekly-reports" class="weekly-reports"></div>
+      </div>
+    </section>
+
+    <!-- ======================= 情绪趋势 Tab ======================= -->
+    <section class="tab-panel" id="tab-trend">
+      <header class="top-bar">
+        <div class="top-left">
+          <div class="brand-mark">Mirror</div>
+          <div class="top-date">情绪趋势</div>
+        </div>
+        <button class="theme-toggle" data-theme-switch><span class="theme-icon">☾</span><span>夜晚</span></button>
+      </header>
+
+      <div class="panel-scroll">
+        <div class="section-title">✦ 最近记录中的情绪分布</div>
+        <div class="card-d">
+          <div id="trend-chart" class="trend-chart"></div>
+          <p class="legend-text">数字越大，表示这种情绪在你的记录中出现越多。</p>
+        </div>
+
+        <div class="section-title">✦ 时间线</div>
+        <div class="card-d">
+          <div id="timeline" class="timeline"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= 底部导航 ======================= -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <button class="nav-btn active" data-tab="today">
+        <span class="nav-icon">◐</span><span class="nav-label">今日</span>
+      </button>
+      <button class="nav-btn" data-tab="mirror">
+        <span class="nav-icon">✦</span><span class="nav-label">我的镜像</span>
+      </button>
+      <button class="nav-btn" data-tab="report">
+        <span class="nav-icon">❍</span><span class="nav-label">成长报告</span>
+      </button>
+      <button class="nav-btn" data-tab="trend">
+        <span class="nav-icon">◉</span><span class="nav-label">情绪趋势</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
